@@ -198,7 +198,7 @@ end;
 
 The procedure Header just emits  the startup code required by the
 assembler:
-                              
+
 
 {--------------------------------------------------------------}
 { Write Header Info }

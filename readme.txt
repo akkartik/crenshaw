@@ -1,7 +1,7 @@
 TUTOR.ZIP
 
 This file contains all of the installments of Jack Crenshaw's
-tutorial on compiler construction, including the new Installment 15. 
+tutorial on compiler construction, including the new Installment 15.
 The intended audience is those folks who are not computer scientists,
 but who enjoy computing and have always wanted to know how compilers
 work. A lot of compiler theory has been left out, but the practical
@@ -36,7 +36,7 @@ ends of the pages, depending on your editor and your printer.  It
 seems to me that almost every file I've ever downloaded from
 CompuServe or BBS's that had such page numbering was incompatible
 with my printer, and gave me pages that were one line short or one
-line long, with the page numbers consequently walking up the page.  
+line long, with the page numbers consequently walking up the page.
 
 So perhaps this new format is, after all, the safest one for general
 distribution.  The files as they exist will look just fine if read
@@ -51,4 +51,3 @@ I hope you like the tutorials.  Much thought went into them.
 									Jack W. Crenshaw
 
 								CompuServe 72325,1327
-

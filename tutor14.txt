@@ -580,7 +580,7 @@ Now change the three lines in the main program to read:
      AddEntry('A', 'a');
      AddEntry('P', 'b');
      AddEntry('X', 'c');
-                             
+
 
 and run the program again.  Did it work?  Then we have the symbol
 table routines needed to support our work on types.  In  the next
@@ -1774,7 +1774,7 @@ table:
   T2  V   |                 |                 |                 |
 -----------------------------------------------------------------
           |                 |                 |                 |
-                             
+
 
 
 

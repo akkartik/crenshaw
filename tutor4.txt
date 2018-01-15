@@ -530,7 +530,7 @@ The assignment statement parallels what we did before:
 
 {--------------------------------------------------------------}
 { Parse and Translate an Assignment Statement }
-                             
+
 
 
 procedure Assignment;

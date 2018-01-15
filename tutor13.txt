@@ -522,7 +522,7 @@ end;
 
 {--------------------------------------------------------------}
 
-                             
+
 
 
 
@@ -629,7 +629,7 @@ DECLARING A PROCEDURE
 
 If you're satisfied that our little program works, then it's time
 to  deal  with  the  procedures.  Since we haven't  talked  about
-                             
+
 
 
 
