@@ -1,4 +1,3 @@
-{--------------------------------------------------------------}
 program Compiler;
 
 {--------------------------------------------------------------}
@@ -34,7 +33,7 @@ begin
    Halt;
 end;
 
-{ Report What Was Expected }
+{ Report What Was Expected and Halt }
 procedure Expected(s: string);
 begin
    Abort(s + ' Expected');
@@ -47,31 +46,16 @@ begin
    else Expected('''' + x + '''');
 end;
 
-{ Recognize an Alpha Character }
-function IsAlpha(c: char): boolean;
-begin
-   IsAlpha := upcase(c) in ['A'..'Z'];
-end;
-
-{ Recognize a Decimal Digit }
 function IsDigit(c: char): boolean;
 begin
    IsDigit := c in ['0'..'9'];
 end;
 
-{ Get an Identifier }
-function GetName: char;
-begin
-   if not IsAlpha(Look) then Expected('Name');
-   GetName := UpCase(Look);
-   GetChar;
-end;
-
-{ Get a Number }
-function GetNum: char;
+{ Read a digit }
+function GetDigit: char;
 begin
    if not IsDigit(Look) then Expected('Integer');
-   GetNum := Look;
+   GetDigit := Look;
    GetChar;
 end;
 
@@ -89,7 +73,7 @@ begin
 end;
 
 {--------------------------------------------------------------}
-{ Main Program }
+{ Parse and translate a binary add/subtract operation }
 
 procedure Init;
 begin
@@ -98,7 +82,7 @@ end;
 
 procedure Term;
 begin
-   EmitLn('MOVE #' + GetNum + ', D0')
+   EmitLn('MOVE #' + GetDigit + ', D0')
 end;
 
 procedure Add;
