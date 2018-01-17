@@ -1,0 +1,8 @@
+#!/usr/bin/zsh
+
+if [[ ! -e $1 || $1 -ot $1.pas ]]
+then
+  fpc $1.pas
+fi
+
+$1
