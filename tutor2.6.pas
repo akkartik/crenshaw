@@ -1,4 +1,3 @@
-{--------------------------------------------------------------}
 program Compiler;
 
 {--------------------------------------------------------------}
@@ -34,44 +33,42 @@ begin
    Halt;
 end;
 
-{ Report What Was Expected }
+{ Report What Was Expected and Halt }
 procedure Expected(s: string);
 begin
    Abort(s + ' Expected');
 end;
 
-{ Match a Specific Input Character }
+{ Check that next character in input is as expected, and consume it }
 procedure Match(x: char);
 begin
    if Look = x then GetChar
    else Expected('''' + x + '''');
 end;
 
-{ Recognize an Alpha Character }
-function IsAlpha(c: char): boolean;
-begin
-   IsAlpha := upcase(c) in ['A'..'Z'];
-end;
-
-{ Recognize a Decimal Digit }
 function IsDigit(c: char): boolean;
 begin
    IsDigit := c in ['0'..'9'];
 end;
 
-{ Get an Identifier }
-function GetName: char;
+{ Read a digit }
+function GetDigit: char;
 begin
-   if not IsAlpha(Look) then Expected('Name');
-   GetName := UpCase(Look);
+   if not IsDigit(Look) then Expected('Integer');
+   GetDigit := Look;
    GetChar;
 end;
 
-{ Get a Number }
-function GetNum: char;
+function IsAlpha(c: char): boolean;
 begin
-   if not IsDigit(Look) then Expected('Integer');
-   GetNum := Look;
+   IsAlpha := upcase(c) in ['A'..'Z'];
+end;
+
+{ Read a single-character Identifier }
+function GetAlpha: char;
+begin
+   if not IsAlpha(Look) then Expected('Name');
+   GetAlpha := UpCase(Look);
    GetChar;
 end;
 
@@ -89,7 +86,7 @@ begin
 end;
 
 {--------------------------------------------------------------}
-{ Main Program }
+{ Parse and translate an arithmetic expression, handling brackets }
 
 procedure Init;
 begin
@@ -106,7 +103,7 @@ begin
       Match(')');
       end
    else
-      EmitLn('MOVE #' + GetNum + ',D0');
+      EmitLn('MOVE #' + GetDigit + ', D0');
 end;
 
 procedure Multiply;
@@ -124,6 +121,7 @@ begin
    EmitLn('DIVS D1, D0');
 end;
 
+{ <term> ::= <num> ['*'|'/' <num>]* }
 procedure Term;
 begin
    Factor;
@@ -152,11 +150,58 @@ begin
    EmitLn('NEG D0');
 end;
 
-{ <expression> ::= <term> [<addop> <term>]* }
+{ <expression> ::= <term> ['+'|'-' <term>]* }
+{ 1 => MOVE #1, D0 }
+{ 1+2 => MOVE #1, D0
+         MOVE D0, -(SP)
+         MOVE #2, D0
+         ADD (SP)+, D0 }
+{ 4-3 => MOVE #4, D0
+         MOVE D0, -(SP)
+         MOVE #3, D0
+         SUB (SP)+, D0
+         NEG D0 }
+{ 1+4-3 => MOVE #1, D0
+           MOVE D0, -(SP)
+           MOVE #4, D0
+           ADD (SP)+, D0
+           MOVE D0, -(SP)
+           MOVE #3, D0
+           SUB (SP)+, D0
+           NEG D0 }
+{ 2*3 => MOVE #2, D0
+         MOVE D0, -(SP)
+         MOVE #3, D0
+         MULS (SP)+, D0 }
+{ 2*3 + 4 => MOVE #2, D0
+             MOVE D0, -(SP)
+             MOVE #3, D0
+             MULS (SP)+, D0
+             MOVE D0, -(SP)
+             MOVE #4, D0
+             ADD (SP)+, D0 }
+{ 2*3 + 4*5 => MOVE #2, D0
+               MOVE D0, -(SP)
+               MOVE #3, D0
+               MULS (SP)+, D0
+               MOVE D0, -(SP)
+                 MOVE #4, D0
+                 MOVE D0, -(SP)
+                 MOVE #5, D0
+                 MULS (SP)+, D0
+               ADD (SP)+, D0 }
+{ 2*(3+4) => MOVE #2, D0
+             MOVE D0, -(SP)
+              MOVE #3, D0
+              MOVE D0, -(SP)
+              MOVE #4, D0
+              ADD (SP)+, D0
+             MULS (SP)+, D0 }
 procedure Expression;
 begin
    Term;
    while Look in ['+', '-'] do begin
+      { D0 contains the running total at each iteration }
       EmitLn('MOVE D0, -(SP)');
       case Look of
        '+': Add;

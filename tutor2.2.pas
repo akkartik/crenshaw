@@ -39,7 +39,7 @@ begin
    Abort(s + ' Expected');
 end;
 
-{ Match a Specific Input Character }
+{ Check that next character in input is as expected, and consume it }
 procedure Match(x: char);
 begin
    if Look = x then GetChar
@@ -73,14 +73,15 @@ begin
 end;
 
 {--------------------------------------------------------------}
-{ Parse and translate a binary add/subtract operation }
+{ Parse and translate a single binary add/subtract operation }
 
 procedure Init;
 begin
    GetChar;
 end;
 
-procedure Term;
+{ 1 => MOVE #1, D0 }
+procedure Num;
 begin
    EmitLn('MOVE #' + GetDigit + ', D0')
 end;
@@ -88,27 +89,38 @@ end;
 procedure Add;
 begin
    Match('+');
-   Term;
+   Num;
    EmitLn('ADD D1, D0');
 end;
 
 procedure Subtract;
 begin
    Match('-');
-   Term;
+   Num;
    EmitLn('SUB D1, D0');
    EmitLn('NEG D0');
 end;
 
+{ <expression> ::= <num> '+'|'-' <num> }
+{ 1+2 => MOVE #1, D0
+         MOVE D0, D1
+         MOVE #2, D0
+         ADD D1, D0 }
+{ 4-3 => MOVE #4, D0
+         MOVE D0, D1
+         MOVE #3, D0
+         SUB D1, D0
+         NEG D0 }
 procedure Expression;
 begin
-   Term;
+   Num;
    EmitLn('MOVE D0, D1');
    case Look of
     '+': Add;
     '-': Subtract;
    else Expected('Addop');
    end;
+   { D0 contains the result }
 end;
 
 begin
