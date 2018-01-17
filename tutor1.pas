@@ -11,7 +11,7 @@ var Look: char;              { Lookahead Character }
 { Read New Character From Input Stream }
 procedure GetChar;
 begin
-   Read(Look);
+  Read(Look);
 end;
 
 {--------------------------------------------------------------}
@@ -19,9 +19,9 @@ end;
 
 procedure Init;
 begin
-   GetChar;
+  GetChar;
 end;
 
 begin
-   Init;
+  Init;
 end.

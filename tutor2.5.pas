@@ -16,60 +16,60 @@ var Look: char;              { Lookahead Character }
 { Read New Character From Input Stream }
 procedure GetChar;
 begin
-   Read(Look);
+  Read(Look);
 end;
 
 { Report an Error }
 procedure Error(s: string);
 begin
-   WriteLn;
-   WriteLn(^G, 'Error: ', s, '.');
+  WriteLn;
+  WriteLn(^G, 'Error: ', s, '.');
 end;
 
 { Report Error and Halt }
 procedure Abort(s: string);
 begin
-   Error(s);
-   Halt;
+  Error(s);
+  Halt;
 end;
 
 { Report What Was Expected and Halt }
 procedure Expected(s: string);
 begin
-   Abort(s + ' Expected');
+  Abort(s + ' Expected');
 end;
 
 { Check that next character in input is as expected, and consume it }
 procedure Match(x: char);
 begin
-   if Look = x then GetChar
-   else Expected('''' + x + '''');
+  if Look = x then GetChar
+  else Expected('''' + x + '''');
 end;
 
 function IsDigit(c: char): boolean;
 begin
-   IsDigit := c in ['0'..'9'];
+  IsDigit := c in ['0'..'9'];
 end;
 
 { Read a digit }
 function GetDigit: char;
 begin
-   if not IsDigit(Look) then Expected('Integer');
-   GetDigit := Look;
-   GetChar;
+  if not IsDigit(Look) then Expected('Integer');
+  GetDigit := Look;
+  GetChar;
 end;
 
 { Output a String with Tab }
 procedure Emit(s: string);
 begin
-   Write(TAB, s);
+  Write(TAB, s);
 end;
 
 { Output a String with Tab and CRLF }
 procedure EmitLn(s: string);
 begin
-   Emit(s);
-   WriteLn;
+  Emit(s);
+  WriteLn;
 end;
 
 {--------------------------------------------------------------}
@@ -77,57 +77,57 @@ end;
 
 procedure Init;
 begin
-   GetChar;
+  GetChar;
 end;
 
 { 1 => MOVE #1, D0 }
 procedure Num;
 begin
-   EmitLn('MOVE #' + GetDigit + ', D0')
+  EmitLn('MOVE #' + GetDigit + ', D0')
 end;
 
 procedure Multiply;
 begin
-   Match('*');
-   Num;
-   EmitLn('MULS (SP)+, D0');
+  Match('*');
+  Num;
+  EmitLn('MULS (SP)+, D0');
 end;
 
 procedure Divide;
 begin
-   Match('/');
-   Num;
-   EmitLn('MOVE (SP)+, D1');
-   EmitLn('DIVS D1, D0');
+  Match('/');
+  Num;
+  EmitLn('MOVE (SP)+, D1');
+  EmitLn('DIVS D1, D0');
 end;
 
 { <term> ::= <num> ['*'|'/' <num>]* }
 procedure Term;
 begin
-   Num;
-   while Look in ['*', '/'] do begin
-      EmitLn('MOVE D0, -(SP)');
-      case Look of
-       '*': Multiply;
-       '/': Divide;
-      else Expected('Mulop');
-      end;
-   end;
+  Num;
+  while Look in ['*', '/'] do begin
+    EmitLn('MOVE D0, -(SP)');
+    case Look of
+      '*': Multiply;
+      '/': Divide;
+    else Expected('Mulop');
+    end;
+  end;
 end;
 
 procedure Add;
 begin
-   Match('+');
-   Term;
-   EmitLn('ADD (SP)+, D0');
+  Match('+');
+  Term;
+  EmitLn('ADD (SP)+, D0');
 end;
 
 procedure Subtract;
 begin
-   Match('-');
-   Term;
-   EmitLn('SUB (SP)+, D0');
-   EmitLn('NEG D0');
+  Match('-');
+  Term;
+  EmitLn('SUB (SP)+, D0');
+  EmitLn('NEG D0');
 end;
 
 { <expression> ::= <term> ['+'|'-' <term>]* }
@@ -172,19 +172,19 @@ end;
                ADD (SP)+, D0 }
 procedure Expression;
 begin
-   Term;
-   while Look in ['+', '-'] do begin
-      { D0 contains the running total at each iteration }
-      EmitLn('MOVE D0, -(SP)');
-      case Look of
-       '+': Add;
-       '-': Subtract;
-      else Expected('Addop');
-      end;
-   end;
+  Term;
+  while Look in ['+', '-'] do begin
+    { D0 contains the running total at each iteration }
+    EmitLn('MOVE D0, -(SP)');
+    case Look of
+      '+': Add;
+      '-': Subtract;
+    else Expected('Addop');
+    end;
+  end;
 end;
 
 begin
-   Init;
-   Expression;
+  Init;
+  Expression;
 end.

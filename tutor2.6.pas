@@ -16,73 +16,73 @@ var Look: char;              { Lookahead Character }
 { Read New Character From Input Stream }
 procedure GetChar;
 begin
-   Read(Look);
+  Read(Look);
 end;
 
 { Report an Error }
 procedure Error(s: string);
 begin
-   WriteLn;
-   WriteLn(^G, 'Error: ', s, '.');
+  WriteLn;
+  WriteLn(^G, 'Error: ', s, '.');
 end;
 
 { Report Error and Halt }
 procedure Abort(s: string);
 begin
-   Error(s);
-   Halt;
+  Error(s);
+  Halt;
 end;
 
 { Report What Was Expected and Halt }
 procedure Expected(s: string);
 begin
-   Abort(s + ' Expected');
+  Abort(s + ' Expected');
 end;
 
 { Check that next character in input is as expected, and consume it }
 procedure Match(x: char);
 begin
-   if Look = x then GetChar
-   else Expected('''' + x + '''');
+  if Look = x then GetChar
+  else Expected('''' + x + '''');
 end;
 
 function IsDigit(c: char): boolean;
 begin
-   IsDigit := c in ['0'..'9'];
+  IsDigit := c in ['0'..'9'];
 end;
 
 { Read a digit }
 function GetDigit: char;
 begin
-   if not IsDigit(Look) then Expected('Integer');
-   GetDigit := Look;
-   GetChar;
+  if not IsDigit(Look) then Expected('Integer');
+  GetDigit := Look;
+  GetChar;
 end;
 
 function IsAlpha(c: char): boolean;
 begin
-   IsAlpha := upcase(c) in ['A'..'Z'];
+  IsAlpha := upcase(c) in ['A'..'Z'];
 end;
 
 { Read a single-character Identifier }
 function GetAlpha: char;
 begin
-   if not IsAlpha(Look) then Expected('Name');
-   GetAlpha := UpCase(Look);
-   GetChar;
+  if not IsAlpha(Look) then Expected('Name');
+  GetAlpha := UpCase(Look);
+  GetChar;
 end;
 
 { Output a String with Tab }
 procedure Emit(s: string);
 begin
-   Write(TAB, s);
+  Write(TAB, s);
 end;
 
 { Output a String with Tab and CRLF }
 procedure EmitLn(s: string);
 begin
-   Emit(s);
-   WriteLn;
+  Emit(s);
+  WriteLn;
 end;
 
 {--------------------------------------------------------------}
@@ -90,64 +90,65 @@ end;
 
 procedure Init;
 begin
-   GetChar;
+  GetChar;
 end;
 
 procedure Expression; Forward;
 
 procedure Factor;
 begin
-   if Look = '(' then begin
-      Match('(');
-      Expression;
-      Match(')');
-      end
-   else
-      EmitLn('MOVE #' + GetDigit + ', D0');
+  if Look = '(' then
+  begin
+    Match('(');
+    Expression;
+    Match(')');
+  end
+  else
+    EmitLn('MOVE #' + GetDigit + ', D0');
 end;
 
 procedure Multiply;
 begin
-   Match('*');
-   Factor;
-   EmitLn('MULS (SP)+, D0');
+  Match('*');
+  Factor;
+  EmitLn('MULS (SP)+, D0');
 end;
 
 procedure Divide;
 begin
-   Match('/');
-   Factor;
-   EmitLn('MOVE (SP)+, D1');
-   EmitLn('DIVS D1, D0');
+  Match('/');
+  Factor;
+  EmitLn('MOVE (SP)+, D1');
+  EmitLn('DIVS D1, D0');
 end;
 
 { <term> ::= <num> ['*'|'/' <num>]* }
 procedure Term;
 begin
-   Factor;
-   while Look in ['*', '/'] do begin
-      EmitLn('MOVE D0, -(SP)');
-      case Look of
-       '*': Multiply;
-       '/': Divide;
-      else Expected('Mulop');
-      end;
-   end;
+  Factor;
+  while Look in ['*', '/'] do begin
+    EmitLn('MOVE D0, -(SP)');
+    case Look of
+      '*': Multiply;
+      '/': Divide;
+    else Expected('Mulop');
+    end;
+  end;
 end;
 
 procedure Add;
 begin
-   Match('+');
-   Term;
-   EmitLn('ADD (SP)+, D0');
+  Match('+');
+  Term;
+  EmitLn('ADD (SP)+, D0');
 end;
 
 procedure Subtract;
 begin
-   Match('-');
-   Term;
-   EmitLn('SUB (SP)+, D0');
-   EmitLn('NEG D0');
+  Match('-');
+  Term;
+  EmitLn('SUB (SP)+, D0');
+  EmitLn('NEG D0');
 end;
 
 { <expression> ::= <term> ['+'|'-' <term>]* }
@@ -199,19 +200,19 @@ end;
              MULS (SP)+, D0 }
 procedure Expression;
 begin
-   Term;
-   while Look in ['+', '-'] do begin
-      { D0 contains the running total at each iteration }
-      EmitLn('MOVE D0, -(SP)');
-      case Look of
-       '+': Add;
-       '-': Subtract;
-      else Expected('Addop');
-      end;
-   end;
+  Term;
+  while Look in ['+', '-'] do begin
+    { D0 contains the running total at each iteration }
+    EmitLn('MOVE D0, -(SP)');
+    case Look of
+      '+': Add;
+      '-': Subtract;
+    else Expected('Addop');
+    end;
+  end;
 end;
 
 begin
-   Init;
-   Expression;
+  Init;
+  Expression;
 end.
