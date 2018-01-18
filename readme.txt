@@ -1,3 +1,18 @@
+Playing with https://compilers.iecc.com/crenshaw
+
+See the tutor?.?.pas files for different versions of the compiler for each
+chapter.
+
+Prerequisites:
+
+  $ sudo apt install fp-ide  # Free Pascal
+
+Try running them using:
+
+  $ run tutor2.6  # will compile (using fpv) if necessary
+
+=== Original Readme
+
 TUTOR.ZIP
 
 This file contains all of the installments of Jack Crenshaw's
