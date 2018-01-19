@@ -82,6 +82,7 @@ end;
 
 procedure Expression; Forward;
 
+{ <factor> ::= '(' <expression> ')' | <num> }
 procedure Factor;
 begin
   if Look = '(' then
@@ -109,7 +110,7 @@ begin
   EmitLn('DIVS D1, D0');
 end;
 
-{ <term> ::= <num> ['*'|'/' <num>]* }
+{ <term> ::= <factor> ['*'|'/' <factor>]* }
 procedure Term;
 begin
   Factor;

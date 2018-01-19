@@ -95,6 +95,7 @@ end;
 
 procedure Expression; Forward;
 
+{ <factor> ::= '(' <expression> ')' | <name> | <num> }
 procedure Factor;
 begin
   if Look = '(' then
@@ -124,7 +125,7 @@ begin
   EmitLn('DIVS D1, D0');
 end;
 
-{ <term> ::= <num> ['*'|'/' <num>]* }
+{ <term> ::= <factor> ['*'|'/' <factor>]* }
 procedure Term;
 begin
   Factor;
@@ -158,7 +159,7 @@ begin
   IsAddop := c in ['+', '-'];
 end;
 
-{ <expression> ::= <term> ['+'|'-' <term>]* }
+{ <expression> ::= ('+'|'-' <term>) | (<term> ['+'|'-' <term>]*) }
 { 1 => MOVE #1, D0 }
 { 1+2 => MOVE #1, D0
          MOVE D0, -(SP)
@@ -210,7 +211,14 @@ end;
         MOVE #1, D0
         SUB (SP)+, D0
         NEG D0 }
-{ TODO: 3+-1 }
+{ 3+(-1) => MOVE #3, D0
+            MOVE D0, -(SP)
+            CLR D0
+            MOVE D0, -(SP)
+            MOVE #1, D0
+            SUB (SP)+, D0
+            NEG D0
+            ADD (SP)+, D0 }
 { a => MOVE A(PC), D0 }  { TODO: why?? }
 procedure Expression;
 begin
