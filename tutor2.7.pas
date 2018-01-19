@@ -59,19 +59,6 @@ begin
   GetChar;
 end;
 
-function IsAlpha(c: char): boolean;
-begin
-  IsAlpha := upcase(c) in ['A'..'Z'];
-end;
-
-{ Read a single-character Identifier }
-function GetAlpha: char;
-begin
-  if not IsAlpha(Look) then Expected('Name');
-  GetAlpha := UpCase(Look);
-  GetChar;
-end;
-
 { Output a String with Tab }
 procedure Emit(s: string);
 begin
@@ -98,11 +85,11 @@ procedure Expression; Forward;
 procedure Factor;
 begin
   if Look = '(' then
-  begin
-    Match('(');
-    Expression;
-    Match(')');
-  end
+    begin
+      Match('(');
+      Expression;
+      Match(')');
+    end
   else
     EmitLn('MOVE #' + GetDigit + ', D0');
 end;

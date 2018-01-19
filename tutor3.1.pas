@@ -59,6 +59,19 @@ begin
   GetChar;
 end;
 
+function IsAlpha(c: char): boolean;
+begin
+  IsAlpha := upcase(c) in ['A'..'Z'];
+end;
+
+{ Read a single-character Identifier }
+function GetAlpha: char;
+begin
+  if not IsAlpha(Look) then Expected('Name');
+  GetAlpha := UpCase(Look);
+  GetChar;
+end;
+
 { Output a String with Tab }
 procedure Emit(s: string);
 begin
@@ -90,6 +103,8 @@ begin
       Expression;
       Match(')');
     end
+  else if IsAlpha(Look) then
+    EmitLn('MOVE ' + GetAlpha + '(PC), D0')
   else
     EmitLn('MOVE #' + GetDigit + ', D0');
 end;
@@ -136,6 +151,11 @@ begin
   Term;
   EmitLn('SUB (SP)+, D0');
   EmitLn('NEG D0');
+end;
+
+function IsAddop(c: char): boolean;
+begin
+  IsAddop := c in ['+', '-'];
 end;
 
 { <expression> ::= <term> ['+'|'-' <term>]* }
@@ -185,10 +205,20 @@ end;
               MOVE #4, D0
               ADD (SP)+, D0
              MULS (SP)+, D0 }
+{ -1 => CLR D0
+        MOVE D0, -(SP)
+        MOVE #1, D0
+        SUB (SP)+, D0
+        NEG D0 }
+{ TODO: 3+-1 }
+{ a => MOVE A(PC), D0 }  { TODO: why?? }
 procedure Expression;
 begin
-  Term;
-  while Look in ['+', '-'] do begin
+  if IsAddOp(Look) then
+    EmitLn('CLR D0')
+  else
+    Term;
+  while IsAddOp(Look) do begin
     { D0 contains the running total at each iteration }
     EmitLn('MOVE D0, -(SP)');
     case Look of
