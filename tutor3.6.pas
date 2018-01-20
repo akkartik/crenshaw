@@ -86,7 +86,7 @@ end;
 
 function IsAlNum(c: char): boolean;
 begin
-   IsAlNum := IsAlpha(c) or IsDigit(c);
+  IsAlNum := IsAlpha(c) or IsDigit(c);
 end;
 
 function GetIdentifier: string;
@@ -298,11 +298,11 @@ end;
 procedure Assignment;
 var Name: string;
 begin
-   Name := GetIdentifier;
-   Match('=');
-   Expression;
-   EmitLn('LEA ' + Name + '(PC), A0');
-   EmitLn('MOVE D0, (A0)')
+  Name := GetIdentifier;
+  Match('=');
+  Expression;
+  EmitLn('LEA ' + Name + '(PC), A0');
+  EmitLn('MOVE D0, (A0)')
 end;
 {--------------------------------------------------------------}
 

@@ -267,11 +267,11 @@ end;
 procedure Assignment;
 var Name: char;
 begin
-   Name := GetAlpha;
-   Match('=');
-   Expression;
-   EmitLn('LEA ' + Name + '(PC), A0');
-   EmitLn('MOVE D0, (A0)')
+  Name := GetAlpha;
+  Match('=');
+  Expression;
+  EmitLn('LEA ' + Name + '(PC), A0');
+  EmitLn('MOVE D0, (A0)')
 end;
 {--------------------------------------------------------------}
 
