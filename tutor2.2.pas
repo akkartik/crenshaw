@@ -118,7 +118,7 @@ begin
   case Look of
     '+': Add;
     '-': Subtract;
-  else Expected('Addop');
+  else Expected('AddOp');
   end;
   { D0 contains the result }
 end;

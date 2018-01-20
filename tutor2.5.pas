@@ -179,7 +179,7 @@ begin
     case Look of
       '+': Add;
       '-': Subtract;
-    else Expected('Addop');
+    else Expected('AddOp');
     end;
   end;
 end;

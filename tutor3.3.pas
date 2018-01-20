@@ -170,9 +170,9 @@ begin
   EmitLn('NEG D0');
 end;
 
-function IsAddop(c: char): boolean;
+function IsAddOp(c: char): boolean;
 begin
-  IsAddop := c in ['+', '-'];
+  IsAddOp := c in ['+', '-'];
 end;
 
 { <expression> ::= ('+'|'-' <term>) | (<term> ['+'|'-' <term>]*) }
@@ -249,7 +249,7 @@ begin
     case Look of
       '+': Add;
       '-': Subtract;
-    else Expected('Addop');
+    else Expected('AddOp');
     end;
   end;
 end;

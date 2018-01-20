@@ -134,9 +134,9 @@ begin
   Term := Value;
 end;
 
-function IsAddop(c: char): boolean;
+function IsAddOp(c: char): boolean;
 begin
-  IsAddop := c in ['+', '-'];
+  IsAddOp := c in ['+', '-'];
 end;
 
 { 4 => 4 }
@@ -171,7 +171,7 @@ begin
              Match('-');
              Value := Value - Term;
            end;
-    else Expected('Addop');
+    else Expected('AddOp');
     end;
   end;
   Expression := Value;
