@@ -52,12 +52,14 @@ begin
   IsDigit := c in ['0'..'9'];
 end;
 
-{ Read a digit }
-function GetDigit: char;
+function GetInteger: string;
 begin
+  GetInteger := '';
   if not IsDigit(Look) then Expected('Integer');
-  GetDigit := Look;
-  GetChar;
+  while IsDigit(Look) do begin
+    GetInteger := GetInteger + Look;
+    GetChar;
+  end;
 end;
 
 function IsAlpha(c: char): boolean;
@@ -65,12 +67,19 @@ begin
   IsAlpha := upcase(c) in ['A'..'Z'];
 end;
 
-{ Read a single-character Identifier }
-function GetAlpha: char;
+function IsAlNum(c: char): boolean;
 begin
-  if not IsAlpha(Look) then Expected('Name');
-  GetAlpha := UpCase(Look);
-  GetChar;
+   IsAlNum := IsAlpha(c) or IsDigit(c);
+end;
+
+function GetIdentifier: string;
+begin
+  GetIdentifier := '';
+  if not IsAlpha(Look) then Expected('Identifier');
+  while IsAlNum(Look) do begin
+    GetIdentifier := GetIdentifier + UpCase(Look);
+    GetChar;
+  end;
 end;
 
 { Output a String with Tab }
@@ -98,9 +107,9 @@ procedure Expression; Forward;
 
 { <ident> ::= <name> ['(' ')'] }
 procedure IdentifierOrCall;
-var Name: char;
+var Name: string;
 begin
-  Name := GetAlpha;
+  Name := GetIdentifier;
   if Look = '(' then
     begin
       Match('(');
@@ -123,7 +132,7 @@ begin
   else if IsAlpha(Look) then
     IdentifierOrCall
   else
-    EmitLn('MOVE #' + GetDigit + ', D0');
+    EmitLn('MOVE #' + GetInteger + ', D0');
 end;
 
 procedure Multiply;
@@ -264,10 +273,13 @@ end;
            ADD (SP)+, D0
            LEA A(PC), A0
            MOVE D0, (A0) }
+{ abc=3 => MOVE #3, D0
+           LEA ABC(PC), A0
+           MOVE D0, (A0) }
 procedure Assignment;
-var Name: char;
+var Name: string;
 begin
-   Name := GetAlpha;
+   Name := GetIdentifier;
    Match('=');
    Expression;
    EmitLn('LEA ' + Name + '(PC), A0');

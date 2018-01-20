@@ -96,7 +96,7 @@ end;
 procedure Expression; Forward;
 
 { <ident> ::= <name> ['(' ')'] }
-procedure Ident;
+procedure IdentifierOrCall;
 var Name: char;
 begin
   Name := GetAlpha;
@@ -120,7 +120,7 @@ begin
       Match(')');
     end
   else if IsAlpha(Look) then
-    Ident
+    IdentifierOrCall
   else
     EmitLn('MOVE #' + GetDigit + ', D0');
 end;
