@@ -65,7 +65,7 @@ end;
 
 function IsAlpha(c: char): boolean;
 begin
-  IsAlpha := upcase(c) in ['A'..'Z'];
+  IsAlpha := UpCase(c) in ['A'..'Z'];
 end;
 
 { Read a single-character Identifier }
