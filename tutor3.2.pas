@@ -95,7 +95,22 @@ end;
 
 procedure Expression; Forward;
 
-{ <factor> ::= '(' <expression> ')' | <name> | <num> }
+{ <ident> ::= <name> ['(' ')'] }
+procedure Ident;
+var Name: char;
+begin
+  Name := GetAlpha;
+  if Look = '(' then
+    begin
+      Match('(');
+      Match(')');
+      EmitLn('BSR ' + Name);
+    end
+  else
+    EmitLn('MOVE ' + Name + '(PC), D0')
+end;
+
+{ <factor> ::= '(' <expression> ')' | <ident> | <num> }
 procedure Factor;
 begin
   if Look = '(' then
@@ -105,7 +120,7 @@ begin
       Match(')');
     end
   else if IsAlpha(Look) then
-    EmitLn('MOVE ' + GetAlpha + '(PC), D0')
+    Ident
   else
     EmitLn('MOVE #' + GetDigit + ', D0');
 end;
@@ -220,6 +235,7 @@ end;
             NEG D0
             ADD (SP)+, D0 }
 { a => MOVE A(PC), D0 }  { A is a label to global segment }
+{ a() => BSR A }
 procedure Expression;
 begin
   if IsAddOp(Look) then
