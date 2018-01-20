@@ -6,7 +6,7 @@ program Compiler;
 var Look: char;              { Lookahead Character }
 
 {--------------------------------------------------------------}
-{ Helpers }
+{ Input stream management }
 
 { Read New Character From Input Stream }
 procedure GetChar;

@@ -8,12 +8,6 @@ var Look: char;              { Lookahead Character }
 {--------------------------------------------------------------}
 { Helpers }
 
-{ Read New Character From Input Stream }
-procedure GetChar;
-begin
-  Read(Look);
-end;
-
 { Report an Error }
 procedure Error(s: string);
 begin
@@ -34,6 +28,28 @@ begin
   Abort(s + ' Expected');
 end;
 
+{--------------------------------------------------------------}
+{ Recognizers }
+
+function IsDigit(c: char): boolean;
+begin
+  IsDigit := c in ['0'..'9'];
+end;
+
+function IsAddOp(c: char): boolean;
+begin
+  IsAddOp := c in ['+', '-'];
+end;
+
+{--------------------------------------------------------------}
+{ Input stream management }
+
+{ Read New Character From Input Stream }
+procedure GetChar;
+begin
+  Read(Look);
+end;
+
 { Check that next character in input is as expected, and consume it }
 procedure Match(x: char);
 begin
@@ -41,48 +57,33 @@ begin
   else Expected('''' + x + '''');
 end;
 
-function IsDigit(c: char): boolean;
-begin
-  IsDigit := c in ['0'..'9'];
-end;
-
-function GetInteger: integer;
+function GetDigit: integer;
 begin
   if not IsDigit(Look) then Expected('Integer');
-  GetInteger := Ord(Look) - Ord('0');
+  GetDigit := Ord(Look) - Ord('0');
   GetChar;
 end;
 
 {--------------------------------------------------------------}
 { Parse and evaluate an arithmetic expression }
 
-procedure Init;
-begin
-  GetChar;
-end;
-
 function Term: integer;
 var Value: integer;
 begin
-  Value := GetInteger;
+  Value := GetDigit;
   while Look in ['*', '/'] do begin
     case Look of
       '*': begin
              Match('*');
-             Value := Value * GetInteger;
+             Value := Value * GetDigit;
            end;
       '/': begin
              Match('/');
-             Value := Value div GetInteger;
+             Value := Value div GetDigit;
            end;
     end;
   end;
   Term := Value;
-end;
-
-function IsAddOp(c: char): boolean;
-begin
-  IsAddOp := c in ['+', '-'];
 end;
 
 { 4 => 4 }
@@ -112,6 +113,11 @@ begin
     end;
   end;
   Expression := Value;
+end;
+
+procedure Init;
+begin
+  GetChar;
 end;
 
 begin

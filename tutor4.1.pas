@@ -8,12 +8,6 @@ var Look: char;              { Lookahead Character }
 {--------------------------------------------------------------}
 { Helpers }
 
-{ Read New Character From Input Stream }
-procedure GetChar;
-begin
-  Read(Look);
-end;
-
 { Report an Error }
 procedure Error(s: string);
 begin
@@ -34,30 +28,42 @@ begin
   Abort(s + ' Expected');
 end;
 
+{--------------------------------------------------------------}
+{ Recognizers }
+
 function IsDigit(c: char): boolean;
 begin
   IsDigit := c in ['0'..'9'];
 end;
 
-function GetInteger: integer;
+{--------------------------------------------------------------}
+{ Input stream management }
+
+{ Read New Character From Input Stream }
+procedure GetChar;
+begin
+  Read(Look);
+end;
+
+function GetDigit: integer;
 begin
   if not IsDigit(Look) then Expected('Integer');
-  GetInteger := Ord(Look) - Ord('0');
+  GetDigit := Ord(Look) - Ord('0');
   GetChar;
 end;
 
 {--------------------------------------------------------------}
 { Read a digit into the Lookahead Character }
 
-procedure Init;
-begin
-  GetChar;
-end;
-
 { 4 => 4 }
 function Expression: integer;
 begin
-  Expression := GetInteger;
+  Expression := GetDigit;
+end;
+
+procedure Init;
+begin
+  GetChar;
 end;
 
 begin

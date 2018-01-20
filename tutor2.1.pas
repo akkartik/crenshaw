@@ -13,12 +13,6 @@ var Look: char;              { Lookahead Character }
 {--------------------------------------------------------------}
 { Helpers }
 
-{ Read New Character From Input Stream }
-procedure GetChar;
-begin
-  Read(Look);
-end;
-
 { Report an Error }
 procedure Error(s: string);
 begin
@@ -39,9 +33,21 @@ begin
   Abort(s + ' Expected');
 end;
 
+{--------------------------------------------------------------}
+{ Recognizers }
+
 function IsDigit(c: char): boolean;
 begin
   IsDigit := c in ['0'..'9'];
+end;
+
+{--------------------------------------------------------------}
+{ Input stream management }
+
+{ Read New Character From Input Stream }
+procedure GetChar;
+begin
+  Read(Look);
 end;
 
 { Read a digit }
@@ -52,31 +58,29 @@ begin
   GetChar;
 end;
 
-{ Output a String with Tab }
+{--------------------------------------------------------------}
+{ Parse and translate a number }
+
 procedure Emit(s: string);
 begin
   Write(TAB, s);
 end;
 
-{ Output a String with Tab and LF }
 procedure EmitLn(s: string);
 begin
   Emit(s);
   WriteLn;
 end;
 
-{--------------------------------------------------------------}
-{ Parse and translate a number }
-
-procedure Init;
-begin
-  GetChar;
-end;
-
 { 1 => MOVE #1, D0 }
 procedure Num;
 begin
   EmitLn('MOVE #' + GetDigit + ', D0')
+end;
+
+procedure Init;
+begin
+  GetChar;
 end;
 
 begin

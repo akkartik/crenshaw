@@ -9,12 +9,6 @@ var Table: Array['A'..'Z'] of integer;
 {--------------------------------------------------------------}
 { Helpers }
 
-{ Read New Character From Input Stream }
-procedure GetChar;
-begin
-  Read(Look);
-end;
-
 { Report an Error }
 procedure Error(s: string);
 begin
@@ -35,16 +29,33 @@ begin
   Abort(s + ' Expected');
 end;
 
+{--------------------------------------------------------------}
+{ Recognizers }
+
+function IsDigit(c: char): boolean;
+begin
+  IsDigit := c in ['0'..'9'];
+end;
+
+function IsAlpha(c: char): boolean;
+begin
+  IsAlpha := UpCase(c) in ['A'..'Z'];
+end;
+
+{--------------------------------------------------------------}
+{ Input stream management }
+
+{ Read New Character From Input Stream }
+procedure GetChar;
+begin
+  Read(Look);
+end;
+
 { Check that next character in input is as expected, and consume it }
 procedure Match(x: char);
 begin
   if Look = x then GetChar
   else Expected('''' + x + '''');
-end;
-
-function IsDigit(c: char): boolean;
-begin
-  IsDigit := c in ['0'..'9'];
 end;
 
 function GetInteger: integer;
@@ -57,11 +68,6 @@ begin
   end;
 end;
 
-function IsAlpha(c: char): boolean;
-begin
-  IsAlpha := UpCase(c) in ['A'..'Z'];
-end;
-
 { Read a single-character Identifier }
 function GetAlpha: char;
 begin
@@ -72,19 +78,6 @@ end;
 
 {--------------------------------------------------------------}
 { Parse and evaluate an algebraic expression, including brackets }
-
-procedure InitTable;
-var i: char;
-begin
-  for i := 'A' to 'Z' do
-    Table[i] := 0;
-end;
-
-procedure Init;
-begin
-  InitTable;
-  GetChar;
-end;
 
 function Expression: integer; Forward;
 
@@ -155,6 +148,19 @@ begin
     end;
   end;
   Expression := Value;
+end;
+
+procedure InitTable;
+var i: char;
+begin
+  for i := 'A' to 'Z' do
+    Table[i] := 0;
+end;
+
+procedure Init;
+begin
+  InitTable;
+  GetChar;
 end;
 
 begin

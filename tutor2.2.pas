@@ -13,12 +13,6 @@ var Look: char;              { Lookahead Character }
 {--------------------------------------------------------------}
 { Helpers }
 
-{ Read New Character From Input Stream }
-procedure GetChar;
-begin
-  Read(Look);
-end;
-
 { Report an Error }
 procedure Error(s: string);
 begin
@@ -39,6 +33,23 @@ begin
   Abort(s + ' Expected');
 end;
 
+{--------------------------------------------------------------}
+{ Recognizers }
+
+function IsDigit(c: char): boolean;
+begin
+  IsDigit := c in ['0'..'9'];
+end;
+
+{--------------------------------------------------------------}
+{ Input stream management }
+
+{ Read New Character From Input Stream }
+procedure GetChar;
+begin
+  Read(Look);
+end;
+
 { Check that next character in input is as expected, and consume it }
 procedure Match(x: char);
 begin
@@ -46,12 +57,6 @@ begin
   else Expected('''' + x + '''');
 end;
 
-function IsDigit(c: char): boolean;
-begin
-  IsDigit := c in ['0'..'9'];
-end;
-
-{ Read a digit }
 function GetDigit: char;
 begin
   if not IsDigit(Look) then Expected('Integer');
@@ -59,25 +64,18 @@ begin
   GetChar;
 end;
 
-{ Output a String with Tab }
+{--------------------------------------------------------------}
+{ Parse and translate a single binary add/subtract operation }
+
 procedure Emit(s: string);
 begin
   Write(TAB, s);
 end;
 
-{ Output a String with Tab and LF }
 procedure EmitLn(s: string);
 begin
   Emit(s);
   WriteLn;
-end;
-
-{--------------------------------------------------------------}
-{ Parse and translate a single binary add/subtract operation }
-
-procedure Init;
-begin
-  GetChar;
 end;
 
 { 1 => MOVE #1, D0 }
@@ -121,6 +119,11 @@ begin
   else Expected('AddOp');
   end;
   { D0 contains the result }
+end;
+
+procedure Init;
+begin
+  GetChar;
 end;
 
 begin

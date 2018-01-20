@@ -14,12 +14,6 @@ var Look: char;              { Lookahead Character }
 {--------------------------------------------------------------}
 { Helpers }
 
-{ Read New Character From Input Stream }
-procedure GetChar;
-begin
-  Read(Look);
-end;
-
 { Report an Error }
 procedure Error(s: string);
 begin
@@ -40,9 +34,41 @@ begin
   Abort(s + ' Expected');
 end;
 
+{--------------------------------------------------------------}
+{ Recognizers }
+
+function IsDigit(c: char): boolean;
+begin
+  IsDigit := c in ['0'..'9'];
+end;
+
+function IsAlpha(c: char): boolean;
+begin
+  IsAlpha := UpCase(c) in ['A'..'Z'];
+end;
+
+function IsAlNum(c: char): boolean;
+begin
+  IsAlNum := IsAlpha(c) or IsDigit(c);
+end;
+
+function IsAddOp(c: char): boolean;
+begin
+  IsAddOp := c in ['+', '-'];
+end;
+
 function IsWhite(c: char): boolean;
 begin
   IsWhite := c in [' ', TAB];
+end;
+
+{--------------------------------------------------------------}
+{ Input stream management }
+
+{ Read New Character From Input Stream }
+procedure GetChar;
+begin
+  Read(Look);
 end;
 
 procedure GetNonWhitespaceChar;
@@ -60,11 +86,6 @@ begin
   else Expected('''' + x + '''');
 end;
 
-function IsDigit(c: char): boolean;
-begin
-  IsDigit := c in ['0'..'9'];
-end;
-
 function GetInteger: string;
 begin
   GetInteger := '';
@@ -73,16 +94,6 @@ begin
     GetInteger := GetInteger + Look;
     GetChar;
   end;
-end;
-
-function IsAlpha(c: char): boolean;
-begin
-  IsAlpha := UpCase(c) in ['A'..'Z'];
-end;
-
-function IsAlNum(c: char): boolean;
-begin
-  IsAlNum := IsAlpha(c) or IsDigit(c);
 end;
 
 function GetIdentifier: string;
@@ -95,25 +106,18 @@ begin
   end;
 end;
 
-{ Output a String with Tab }
+{--------------------------------------------------------------}
+{ Parse and translate an assignment to an arithmetic expression, handling brackets }
+
 procedure Emit(s: string);
 begin
   Write(TAB, s);
 end;
 
-{ Output a String with Tab and LF }
 procedure EmitLn(s: string);
 begin
   Emit(s);
   WriteLn;
-end;
-
-{--------------------------------------------------------------}
-{ Parse and translate an assignment to an arithmetic expression, handling brackets }
-
-procedure Init;
-begin
-  GetNonWhitespaceChar;
 end;
 
 procedure Expression; Forward;
@@ -190,11 +194,6 @@ begin
   Term;
   EmitLn('SUB (SP)+, D0');
   EmitLn('NEG D0');
-end;
-
-function IsAddOp(c: char): boolean;
-begin
-  IsAddOp := c in ['+', '-'];
 end;
 
 { <expression> ::= ('+'|'-' <term>) | (<term> ['+'|'-' <term>]*) }
@@ -298,7 +297,11 @@ begin
   EmitLn('LEA ' + Name + '(PC), A0');
   EmitLn('MOVE D0, (A0)')
 end;
-{--------------------------------------------------------------}
+
+procedure Init;
+begin
+  GetNonWhitespaceChar;
+end;
 
 begin
   Init;
