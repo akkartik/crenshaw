@@ -7,9 +7,9 @@ Prerequisites:
 
   $ sudo apt install fp-ide  # Free Pascal
 
-Try running them using:
+Try running them using commands like:
 
-  $ run tutor2.6  # will compile (using fpv) if necessary
+  $ run tutor2.6  # will compile (using fpc) if necessary
 
 === Original Readme
 
