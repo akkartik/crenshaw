@@ -187,7 +187,7 @@ end;
 procedure Output;
 begin
   Match('!');
-  WriteLn(Table[GetAlpha]);
+  WriteLn('=> ', Table[GetAlpha]);
 end;
 
 procedure InitTable;
