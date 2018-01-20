@@ -4,6 +4,7 @@ program Compiler;
 { Constant Declarations }
 
 const TAB = ^I;
+const LF = ^J;  { Line-ending for *nix }
 
 {--------------------------------------------------------------}
 { Variable Declarations }
@@ -59,6 +60,19 @@ begin
   GetChar;
 end;
 
+function IsAlpha(c: char): boolean;
+begin
+  IsAlpha := upcase(c) in ['A'..'Z'];
+end;
+
+{ Read a single-character Identifier }
+function GetAlpha: char;
+begin
+  if not IsAlpha(Look) then Expected('Name');
+  GetAlpha := UpCase(Look);
+  GetChar;
+end;
+
 { Output a String with Tab }
 procedure Emit(s: string);
 begin
@@ -82,7 +96,22 @@ end;
 
 procedure Expression; Forward;
 
-{ <factor> ::= '(' <expression> ')' | <num> }
+{ <ident> ::= <name> ['(' ')'] }
+procedure Ident;
+var Name: char;
+begin
+  Name := GetAlpha;
+  if Look = '(' then
+    begin
+      Match('(');
+      Match(')');
+      EmitLn('BSR ' + Name);
+    end
+  else
+    EmitLn('MOVE ' + Name + '(PC), D0')
+end;
+
+{ <factor> ::= '(' <expression> ')' | <ident> | <num> }
 procedure Factor;
 begin
   if Look = '(' then
@@ -91,6 +120,8 @@ begin
       Expression;
       Match(')');
     end
+  else if IsAlpha(Look) then
+    Ident
   else
     EmitLn('MOVE #' + GetDigit + ', D0');
 end;
@@ -139,7 +170,12 @@ begin
   EmitLn('NEG D0');
 end;
 
-{ <expression> ::= <term> ['+'|'-' <term>]* }
+function IsAddop(c: char): boolean;
+begin
+  IsAddop := c in ['+', '-'];
+end;
+
+{ <expression> ::= ('+'|'-' <term>) | (<term> ['+'|'-' <term>]*) }
 { 1 => MOVE #1, D0 }
 { 1+2 => MOVE #1, D0
          MOVE D0, -(SP)
@@ -186,10 +222,28 @@ end;
               MOVE #4, D0
               ADD (SP)+, D0
              MULS (SP)+, D0 }
+{ -1 => CLR D0
+        MOVE D0, -(SP)
+        MOVE #1, D0
+        SUB (SP)+, D0
+        NEG D0 }
+{ 3+(-1) => MOVE #3, D0
+            MOVE D0, -(SP)
+            CLR D0
+            MOVE D0, -(SP)
+            MOVE #1, D0
+            SUB (SP)+, D0
+            NEG D0
+            ADD (SP)+, D0 }
+{ a => MOVE A(PC), D0 }  { A is a label to global segment }
+{ a() => BSR A }
 procedure Expression;
 begin
-  Term;
-  while Look in ['+', '-'] do begin
+  if IsAddOp(Look) then
+    EmitLn('CLR D0')
+  else
+    Term;
+  while IsAddOp(Look) do begin
     { D0 contains the running total at each iteration }
     EmitLn('MOVE D0, -(SP)');
     case Look of
@@ -203,4 +257,5 @@ end;
 begin
   Init;
   Expression;
+  if Look <> LF then Expected('Newline');
 end.

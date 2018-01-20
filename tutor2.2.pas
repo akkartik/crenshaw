@@ -65,7 +65,7 @@ begin
   Write(TAB, s);
 end;
 
-{ Output a String with Tab and CRLF }
+{ Output a String with Tab and LF }
 procedure EmitLn(s: string);
 begin
   Emit(s);
