@@ -87,7 +87,7 @@ begin
 end;
 
 {--------------------------------------------------------------}
-{ Parse and translate an arithmetic expression, handling brackets }
+{ Parse and translate an assignment to an arithmetic expression, handling brackets }
 
 procedure Init;
 begin
