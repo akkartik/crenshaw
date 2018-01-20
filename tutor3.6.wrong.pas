@@ -73,10 +73,9 @@ end;
 
 procedure GetNonWhitespaceChar;
 begin
-  { Pascal doesn't seem to have a do..while loop. }
-  GetChar;
-  while IsWhite(Look) do
+  repeat
     GetChar;
+  until not IsWhite(Look);
 end;
 
 { Check that next character in input is as expected, and consume it }
